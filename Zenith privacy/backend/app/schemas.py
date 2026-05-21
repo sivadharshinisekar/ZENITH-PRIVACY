@@ -1,3 +1,4 @@
+from typing import List
 from datetime import datetime
 
 from pydantic import BaseModel, EmailStr, Field
@@ -32,7 +33,7 @@ class AccountOut(BaseModel):
 
 
 class AccountsPage(BaseModel):
-    items: list[AccountOut]
+    items: List[AccountOut]
     total: int
     page: int = 1
     page_size: int = 50

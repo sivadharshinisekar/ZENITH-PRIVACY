@@ -1,3 +1,4 @@
+from typing import List
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
@@ -39,5 +40,5 @@ app.include_router(accounts.router)
 
 
 @app.get("/health")
-def health() -> dict[str, str]:
+def health() -> Dict[str, str]:
     return {"status": "ok"}

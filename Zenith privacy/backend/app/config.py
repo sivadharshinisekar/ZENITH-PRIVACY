@@ -1,3 +1,4 @@
+from typing import List
 from functools import lru_cache
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -22,7 +23,7 @@ class Settings(BaseSettings):
     cors_origins: str = ""  # comma-separated
 
     @property
-    def cors_origin_list(self) -> list[str]:
+    def cors_origin_list(self) -> List[str]:
         if self.cors_origins.strip():
             return [o.strip() for o in self.cors_origins.split(",") if o.strip()]
         return [self.frontend_origin.rstrip("/")]

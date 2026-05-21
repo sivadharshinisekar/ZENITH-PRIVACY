@@ -1,4 +1,4 @@
-from typing import List
+from typing import Dict
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI

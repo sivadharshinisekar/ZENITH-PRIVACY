@@ -1,0 +1,32 @@
+@import "tailwindcss";
+
+:root {
+  --zenith-bg: #f4f6fb;
+  --zenith-fg: #0f172a;
+  --zenith-card: #ffffff;
+  --zenith-border: #e2e8f0;
+  --zenith-accent: #1d4ed8;
+  --zenith-accent-soft: #dbeafe;
+  --zenith-muted: #64748b;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --zenith-bg: #0b1220;
+    --zenith-fg: #e2e8f0;
+    --zenith-card: #111827;
+    --zenith-border: #1f2937;
+    --zenith-accent: #60a5fa;
+    --zenith-accent-soft: #172554;
+    --zenith-muted: #94a3b8;
+  }
+}
+
+@theme inline {
+  --font-sans: var(--font-zenith-body), ui-sans-serif, system-ui;
+  --font-display: var(--font-zenith-display), ui-serif, Georgia;
+}
+
+body {
+  font-family: var(--font-sans);
+}

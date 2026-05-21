@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from datetime import UTC, datetime, timedelta
+from typing import Optional
 
 import httpx
 
@@ -12,15 +13,25 @@ GOOGLE_USERINFO_URL = "https://www.googleapis.com/oauth2/v2/userinfo"
 @dataclass
 class GoogleTokenBundle:
     access_token: str
-    refresh_token: str | None
-    expires_in: int | None
+    refresh_token: Optional[str]
+    expires_in: Optional[int]
 
 
-def exchange_authorization_code(code: str, redirect_uri: str, settings: Settings | None = None) -> GoogleTokenBundle:
+def exchange_authorization_code(
+    code: str,
+    redirect_uri: str,
+    settings: Optional[Settings] = None,
+) -> GoogleTokenBundle:
+
     s = settings or get_settings()
+
     if not s.google_client_id or not s.google_client_secret:
-        raise RuntimeError("GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET must be configured")
+        raise RuntimeError(
+            "GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET must be configured"
+        )
+
     with httpx.Client(timeout=30.0) as client:
+
         r = client.post(
             GOOGLE_TOKEN_URL,
             data={
@@ -31,8 +42,11 @@ def exchange_authorization_code(code: str, redirect_uri: str, settings: Settings
                 "grant_type": "authorization_code",
             },
         )
+
         r.raise_for_status()
+
         data = r.json()
+
     return GoogleTokenBundle(
         access_token=data["access_token"],
         refresh_token=data.get("refresh_token"),
@@ -40,9 +54,15 @@ def exchange_authorization_code(code: str, redirect_uri: str, settings: Settings
     )
 
 
-def refresh_access_token(refresh_token: str, settings: Settings | None = None) -> GoogleTokenBundle:
+def refresh_access_token(
+    refresh_token: str,
+    settings: Optional[Settings] = None,
+) -> GoogleTokenBundle:
+
     s = settings or get_settings()
+
     with httpx.Client(timeout=30.0) as client:
+
         r = client.post(
             GOOGLE_TOKEN_URL,
             data={
@@ -52,8 +72,11 @@ def refresh_access_token(refresh_token: str, settings: Settings | None = None) -
                 "client_secret": s.google_client_secret,
             },
         )
+
         r.raise_for_status()
+
         data = r.json()
+
     return GoogleTokenBundle(
         access_token=data["access_token"],
         refresh_token=data.get("refresh_token") or refresh_token,
@@ -61,18 +84,40 @@ def refresh_access_token(refresh_token: str, settings: Settings | None = None) -
     )
 
 
-def fetch_google_email(access_token: str) -> str:
+def fetch_google_email(
+    access_token: str,
+) -> str:
+
     with httpx.Client(timeout=30.0) as client:
-        r = client.get(GOOGLE_USERINFO_URL, headers={"Authorization": f"Bearer {access_token}"})
+
+        r = client.get(
+            GOOGLE_USERINFO_URL,
+            headers={
+                "Authorization": f"Bearer {access_token}"
+            },
+        )
+
         r.raise_for_status()
+
         data = r.json()
+
     email = data.get("email")
+
     if not email:
-        raise ValueError("Google userinfo did not return an email")
+        raise ValueError(
+            "Google userinfo did not return an email"
+        )
+
     return str(email).lower()
 
 
-def expires_at_from_bundle(bundle: GoogleTokenBundle) -> datetime | None:
+def expires_at_from_bundle(
+    bundle: GoogleTokenBundle,
+) -> Optional[datetime]:
+
     if bundle.expires_in is None:
         return None
-    return datetime.now(UTC) + timedelta(seconds=int(bundle.expires_in))
+
+    return datetime.now(UTC) + timedelta(
+        seconds=int(bundle.expires_in)
+    )

@@ -1,3 +1,4 @@
+from typing import Optional
 from __future__ import annotations
 
 from datetime import UTC, datetime, timedelta
@@ -14,7 +15,7 @@ from app.security import decrypt_token, encrypt_token
 GMAIL_READONLY = "https://www.googleapis.com/auth/gmail.readonly"
 
 
-def _creds_for_user(user: User, settings: Settings) -> Credentials | None:
+def _creds_for_user(user: User, settings: Settings) -> Optional[Credentials]:
     access = decrypt_token(user.google_access_token_enc, settings)
     refresh = decrypt_token(user.google_refresh_token_enc, settings)
     if not access and not refresh:

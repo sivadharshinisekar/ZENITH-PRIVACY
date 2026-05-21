@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Optional
 
 from sqlalchemy import DateTime, ForeignKey, Integer, String, Text, UniqueConstraint, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -14,9 +15,11 @@ class User(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
     # Encrypted at rest (Fernet); access token rotated via refresh
-    google_refresh_token_enc: Mapped[str | None] = mapped_column(Text, nullable=True)
-    google_access_token_enc: Mapped[str | None] = mapped_column(Text, nullable=True)
-    google_token_expires_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    google_refresh_token_enc: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+
+    google_access_token_enc: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+
+    google_token_expires_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)
 
     accounts: Mapped[list["Account"]] = relationship("Account", back_populates="user", cascade="all, delete-orphan")
 
